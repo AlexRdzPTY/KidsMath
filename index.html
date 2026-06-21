@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KidsMath - Aprende jugando</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+<base target="_blank">
+</head>
+<body>
+    <div id="app">
+        <!-- PANTALLA DE EDAD -->
+        <div id="pantalla-edad" class="pantalla activa">
+            <h1>👦👧 KidsMath</h1>
+            <p class="subtitulo">¡Aprende mientras te diviertes!</p>
+            <p class="pregunta-edad">¿Cuántos años tienes?</p>
+            <div class="menu-botones edad-botones">
+                <button class="btn-op" onclick="seleccionarEdad('menos5')">
+                    <span class="emoji">🍼</span>
+                    <span class="texto">Menos de 5</span>
+                </button>
+                <button class="btn-op" onclick="seleccionarEdad('5-6')">
+                    <span class="emoji">🧸</span>
+                    <span class="texto">5 - 6 años</span>
+                </button>
+                <button class="btn-op" onclick="seleccionarEdad('7-8')">
+                    <span class="emoji">🎒</span>
+                    <span class="texto">7 - 8 años</span>
+                </button>
+                <button class="btn-op" onclick="seleccionarEdad('9-10')">
+                    <span class="emoji">🚀</span>
+                    <span class="texto">9 - 10 años</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE INICIO (OPERACIONES) -->
+        <div id="pantalla-inicio" class="pantalla">
+            <h1>👦👧 KidsMath</h1>
+            <p class="subtitulo">¡Aprende mientras te diviertes!</p>
+            <p class="grupo-edad" id="grupo-edad-texto"></p>
+
+            <div class="menu-botones" id="botones-operaciones"></div>
+
+            <div class="stats">
+                <p>⭐ Estrellas totales: <span id="estrellas-total">0</span></p>
+                <p>🏆 Mejor racha: <span id="racha-max">0</span></p>
+            </div>
+
+            <button class="btn-cambiar-edad" onclick="volverEdad()">🔄 Cambiar edad</button>
+        </div>
+
+        <!-- PANTALLA DE JUEGO -->
+        <div id="pantalla-juego" class="pantalla">
+            <div class="barra-superior">
+                <button class="btn-volver" onclick="volverInicio()">←</button>
+                <span id="titulo-modo">Sumar</span>
+                <span id="contador-estrellas">⭐ 0/5</span>
+            </div>
+
+            <div class="area-juego">
+                <div id="pregunta" class="pregunta">¿Cuánto es 5 + 3?</div>
+
+                <div id="visual-imagenes" class="visual-imagenes" style="display:none;"></div>
+
+                <div id="visual-fraccion" class="visual-fraccion" style="display:none;">
+                    <canvas id="canvas-fraccion" width="200" height="200"></canvas>
+                </div>
+
+                <div class="opciones" id="opciones"></div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+
+            <div class="barra-progreso">
+                <div id="barra-progreso-fill"></div>
+            </div>
+            <p class="progreso-texto">Pregunta <span id="num-pregunta">1</span> de 10</p>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="pantalla-resultado" class="pantalla">
+            <h2 id="titulo-resultado">¡Excelente!</h2>
+            <div class="resultado-estrellas" id="resultado-estrellas"></div>
+            <p id="mensaje-resultado"></p>
+            <button class="btn-principal" onclick="volverInicio()">Jugar otra vez</button>
+        </div>
+    </div>
+
+    <!-- CANVAS DE CONFETI -->
+    <canvas id="confeti-canvas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;"></canvas>
+
+    <script src="game.js"></script>
+</body>
+</html>
