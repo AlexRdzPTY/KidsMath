@@ -14,24 +14,74 @@ const CONFIG_EDAD = {
     'menos5': {
         nombre: 'Menos de 5 años',
         operaciones: ['sumar'],
-        permiteFracciones: false
+        permiteFracciones: false,
+        muestraLapiz: false
     },
     '5-6': {
         nombre: '5 - 6 años',
         operaciones: ['sumar', 'restar', 'multiplicar'],
-        permiteFracciones: false
+        permiteFracciones: false,
+        muestraLapiz: true
     },
     '7-8': {
         nombre: '7 - 8 años',
         operaciones: ['sumar', 'restar', 'multiplicar', 'dividir'],
-        permiteFracciones: false
+        permiteFracciones: false,
+        muestraLapiz: true
     },
     '9-10': {
         nombre: '9 - 10 años',
         operaciones: ['sumar', 'restar', 'multiplicar', 'dividir', 'fracciones'],
-        permiteFracciones: true
+        permiteFracciones: true,
+        muestraLapiz: true
     }
 };
+
+// ===== PROMEDIO Y RACHA DEL DÍA =====
+function obtenerHistorialDia() {
+    let hoy = new Date().toISOString().split('T')[0];
+    let key = 'kidsmath_historial_' + hoy;
+    let datos = localStorage.getItem(key);
+    return datos ? JSON.parse(datos) : [];
+}
+
+function guardarIntento(correctasCount) {
+    let hoy = new Date().toISOString().split('T')[0];
+    let key = 'kidsmath_historial_' + hoy;
+    let historial = obtenerHistorialDia();
+    historial.push(correctasCount);
+    if (historial.length > 10) historial = historial.slice(-10);
+    localStorage.setItem(key, JSON.stringify(historial));
+    return historial;
+}
+
+function calcularPromedioDia() {
+    let historial = obtenerHistorialDia();
+    if (historial.length === 0) return 0;
+    let suma = historial.reduce((a, b) => a + b, 0);
+    let promedioAciertos = suma / historial.length;
+    return (promedioAciertos / 2).toFixed(1);
+}
+
+function obtenerRachaDia() {
+    let hoy = new Date().toISOString().split('T')[0];
+    let key = 'kidsmath_racha_dia_' + hoy;
+    return parseInt(localStorage.getItem(key)) || 0;
+}
+
+function actualizarRachaDia(nuevaRacha) {
+    let hoy = new Date().toISOString().split('T')[0];
+    let key = 'kidsmath_racha_dia_' + hoy;
+    let actual = parseInt(localStorage.getItem(key)) || 0;
+    if (nuevaRacha > actual) {
+        localStorage.setItem(key, nuevaRacha);
+    }
+}
+
+function actualizarStatsInicio() {
+    document.getElementById('promedio-dia').textContent = calcularPromedioDia();
+    document.getElementById('racha-dia').textContent = obtenerRachaDia();
+}
 
 // ===== AUDIO =====
 let audioCtx = null;
@@ -158,15 +208,137 @@ function lanzarConfeti() {
     animar();
 }
 
+// ===== NOTEPAD =====
+let notepadActivo = false;
+let notepadCtx = null;
+let notepadDibujando = false;
+let notepadColor = '#333333';
+let notepadColores = ['#333333', '#e74c3c', '#3498db', '#27ae60', '#f39c12', '#9b59b6'];
+let notepadColorIdx = 0;
+
+function initNotepad() {
+    let canvas = document.getElementById('notepad-canvas');
+    if (!canvas) return;
+
+    let overlay = document.getElementById('notepad-overlay');
+    let header = overlay.querySelector('.notepad-header');
+    let toolbar = overlay.querySelector('.notepad-toolbar');
+
+    overlay.style.display = 'flex';
+    let headerH = header ? header.offsetHeight : 50;
+    let toolbarH = toolbar ? toolbar.offsetHeight : 50;
+    let overlayH = window.innerHeight;
+    let overlayW = window.innerWidth;
+
+    // Preserve existing drawing by saving to an offscreen canvas before resize
+    let oldCanvas = document.createElement('canvas');
+    let oldCtx = oldCanvas.getContext('2d');
+    let hadContent = canvas.width > 0 && canvas.height > 0;
+
+    if (hadContent && notepadCtx) {
+        oldCanvas.width = canvas.width;
+        oldCanvas.height = canvas.height;
+        oldCtx.drawImage(canvas, 0, 0);
+    }
+
+    canvas.width = overlayW;
+    canvas.height = overlayH - headerH - toolbarH;
+
+    notepadCtx = canvas.getContext('2d');
+    notepadCtx.lineCap = 'round';
+    notepadCtx.lineJoin = 'round';
+    notepadCtx.lineWidth = 4;
+    notepadCtx.strokeStyle = notepadColor;
+
+    // Restore previous drawing if it existed
+    if (hadContent) {
+        notepadCtx.drawImage(oldCanvas, 0, 0);
+    }
+
+    // Remove old listeners to avoid duplicates, then reattach
+    let newCanvas = canvas.cloneNode(false); // shallow clone, no content
+    canvas.parentNode.replaceChild(newCanvas, canvas);
+    canvas = document.getElementById('notepad-canvas');
+
+    // Restore the drawing onto the new canvas element
+    notepadCtx = canvas.getContext('2d');
+    notepadCtx.lineCap = 'round';
+    notepadCtx.lineJoin = 'round';
+    notepadCtx.lineWidth = 4;
+    notepadCtx.strokeStyle = notepadColor;
+
+    if (hadContent) {
+        notepadCtx.drawImage(oldCanvas, 0, 0);
+    }
+
+    canvas.addEventListener('pointerdown', notepadStart);
+    canvas.addEventListener('pointermove', notepadMove);
+    canvas.addEventListener('pointerup', notepadEnd);
+    canvas.addEventListener('pointercancel', notepadEnd);
+}
+
+function notepadStart(e) {
+    e.preventDefault();
+    notepadDibujando = true;
+    let canvas = document.getElementById('notepad-canvas');
+    let rect = canvas.getBoundingClientRect();
+    notepadCtx.beginPath();
+    notepadCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function notepadMove(e) {
+    e.preventDefault();
+    if (!notepadDibujando) return;
+    let canvas = document.getElementById('notepad-canvas');
+    let rect = canvas.getBoundingClientRect();
+    notepadCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    notepadCtx.stroke();
+}
+
+function notepadEnd(e) {
+    e.preventDefault();
+    notepadDibujando = false;
+    notepadCtx.closePath();
+}
+
+function toggleNotepad() {
+    playSound('click');
+    vibrar(30);
+
+    let overlay = document.getElementById('notepad-overlay');
+    notepadActivo = !notepadActivo;
+
+    if (notepadActivo) {
+        overlay.style.display = 'flex';
+        setTimeout(() => initNotepad(), 50);
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+function limpiarNotepad() {
+    playSound('click');
+    vibrar(30);
+    if (notepadCtx) {
+        let canvas = document.getElementById('notepad-canvas');
+        notepadCtx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+function cambiarColorNotepad() {
+    playSound('click');
+    vibrar(30);
+    notepadColorIdx = (notepadColorIdx + 1) % notepadColores.length;
+    notepadColor = notepadColores[notepadColorIdx];
+    if (notepadCtx) {
+        notepadCtx.strokeStyle = notepadColor;
+    }
+}
+
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
-    actualizarStats();
+    actualizarStatsInicio();
 });
-
-function actualizarStats() {
-    document.getElementById('estrellas-total').textContent = totalEstrellas;
-    document.getElementById('racha-max').textContent = rachaMax;
-}
 
 // ===== SELECCIÓN DE EDAD =====
 function seleccionarEdad(edad) {
@@ -193,6 +365,7 @@ function seleccionarEdad(edad) {
     });
 
     mostrarPantalla('pantalla-inicio');
+    actualizarStatsInicio();
 }
 
 function volverEdad() {
@@ -212,9 +385,25 @@ function irA(modo) {
     racha = 0;
     preguntas = generarPreguntas(modo);
 
+    // Limpiar el notepad al iniciar un nuevo modo de juego
+    limpiarNotepad();
+
     let titulo = modo === 'fracciones' ? 'Fracciones' : 
                  modo.charAt(0).toUpperCase() + modo.slice(1);
     document.getElementById('titulo-modo').textContent = titulo;
+
+    let config = CONFIG_EDAD[grupoEdad];
+    let btnLapiz = document.getElementById('btn-lapiz');
+    let barraFija = document.getElementById('barra-progreso-fija');
+
+    if (config && config.muestraLapiz) {
+        btnLapiz.style.display = 'flex';
+    } else {
+        btnLapiz.style.display = 'none';
+    }
+
+    // Mostrar barra de progreso fija
+    barraFija.style.display = 'block';
 
     mostrarPantalla('pantalla-juego');
     mostrarPregunta();
@@ -223,13 +412,27 @@ function irA(modo) {
 function volverInicio() {
     playSound('click');
     vibrar(30);
+    document.getElementById('notepad-overlay').style.display = 'none';
+    notepadActivo = false;
+    document.getElementById('btn-lapiz').style.display = 'none';
+    document.getElementById('barra-progreso-fija').style.display = 'none';
     mostrarPantalla('pantalla-inicio');
-    actualizarStats();
+    actualizarStatsInicio();
 }
 
 function mostrarPantalla(id) {
     document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
     document.getElementById(id).classList.add('activa');
+
+    // Mostrar/ocultar botón info según la pantalla
+    let btnInfo = document.getElementById('btn-info');
+    if (btnInfo) {
+        if (id === 'pantalla-edad' || id === 'pantalla-inicio') {
+            btnInfo.style.display = 'flex';
+        } else {
+            btnInfo.style.display = 'none';
+        }
+    }
 }
 
 // ===== GENERADOR DE PREGUNTAS =====
@@ -248,6 +451,7 @@ function aleatorio(min, max) {
 function crearPregunta(modo) {
     let a, b, respuesta, texto, tipo = 'normal';
     let usarImagenes = false;
+    let emojiA = '';
 
     switch(grupoEdad) {
         case 'menos5':
@@ -259,6 +463,7 @@ function crearPregunta(modo) {
                 if (usarImagenes) {
                     texto = '';
                     tipo = 'imagenes';
+                    emojiA = EMOJIS_OBJETOS[aleatorio(0, EMOJIS_OBJETOS.length - 1)];
                 } else {
                     texto = `¿Cuánto es ${a} + ${b}?`;
                 }
@@ -285,7 +490,14 @@ function crearPregunta(modo) {
                 a = aleatorio(1, 4);
                 b = aleatorio(1, 12);
                 respuesta = a * b;
-                texto = `¿Cuánto es ${a} × ${b}?`;
+                usarImagenes = Math.random() > 0.5;
+                if (usarImagenes) {
+                    texto = '';
+                    tipo = 'imagenes-multiplicar';
+                    emojiA = EMOJIS_OBJETOS[aleatorio(0, EMOJIS_OBJETOS.length - 1)];
+                } else {
+                    texto = `¿Cuánto es ${a} × ${b}?`;
+                }
             }
             break;
 
@@ -344,7 +556,6 @@ function crearPregunta(modo) {
                 tipo = 'fraccion';
                 let denominador = aleatorio(4, 8);
                 let numerador = aleatorio(1, denominador - 1);
-                // La respuesta es el string completo de la fracción
                 respuesta = `${numerador}/${denominador}`;
                 texto = `¿Qué parte está coloreada?`;
                 return {
@@ -364,8 +575,15 @@ function crearPregunta(modo) {
     if (usarImagenes) {
         p.a = a;
         p.b = b;
-        p.emojiA = EMOJIS_OBJETOS[aleatorio(0, EMOJIS_OBJETOS.length - 1)];
-        p.emojiB = EMOJIS_OBJETOS[aleatorio(0, EMOJIS_OBJETOS.length - 1)];
+        p.emojiA = emojiA || EMOJIS_OBJETOS[aleatorio(0, EMOJIS_OBJETOS.length - 1)];
+        // Para sumas, asignar un emoji diferente para el segundo sumando
+        if (tipo === 'imagenes') {
+            let emojiIdx = aleatorio(0, EMOJIS_OBJETOS.length - 1);
+            while (EMOJIS_OBJETOS[emojiIdx] === p.emojiA) {
+                emojiIdx = aleatorio(0, EMOJIS_OBJETOS.length - 1);
+            }
+            p.emojiB = EMOJIS_OBJETOS[emojiIdx];
+        }
     }
 
     return p;
@@ -413,12 +631,14 @@ function generarOpcionesFraccion(numerador, denominador) {
 function mostrarPregunta() {
     let p = preguntas[preguntaActual];
 
+    // Limpiar notepad al pasar a una nueva pregunta (excepto la primera)
+    if (preguntaActual > 0) {
+        limpiarNotepad();
+    }
+
     document.getElementById('pregunta').textContent = p.texto;
     document.getElementById('num-pregunta').textContent = preguntaActual + 1;
-
-    let estrellasActuales = Math.floor(correctas / 2);
-    document.getElementById('contador-estrellas').textContent = `⭐ ${estrellasActuales}/5`;
-
+    document.getElementById('contador-aciertos').textContent = `✅ ${correctas}/10`;
     document.getElementById('feedback').textContent = '';
 
     let progreso = ((preguntaActual + 1) / 10) * 100;
@@ -428,34 +648,9 @@ function mostrarPregunta() {
     document.getElementById('visual-fraccion').style.display = 'none';
 
     if (p.tipo === 'imagenes') {
-        let contenedor = document.getElementById('visual-imagenes');
-        contenedor.style.display = 'flex';
-        contenedor.innerHTML = '';
-
-        for (let i = 0; i < p.a; i++) {
-            let span = document.createElement('span');
-            span.className = 'item-imagen';
-            span.textContent = p.emojiA;
-            contenedor.appendChild(span);
-        }
-        let mas = document.createElement('span');
-        mas.className = 'item-imagen mas';
-        mas.textContent = '+';
-        contenedor.appendChild(mas);
-        for (let i = 0; i < p.b; i++) {
-            let span = document.createElement('span');
-            span.className = 'item-imagen';
-            span.textContent = p.emojiB;
-            contenedor.appendChild(span);
-        }
-        let igual = document.createElement('span');
-        igual.className = 'item-imagen igual';
-        igual.textContent = '=';
-        contenedor.appendChild(igual);
-        let pregunta = document.createElement('span');
-        pregunta.className = 'item-imagen';
-        pregunta.textContent = '❓';
-        contenedor.appendChild(pregunta);
+        mostrarVisualImagenes(p, '+', '=');
+    } else if (p.tipo === 'imagenes-multiplicar') {
+        mostrarVisualMultiplicar(p);
     }
 
     if (p.tipo === 'fraccion') {
@@ -473,6 +668,67 @@ function mostrarPregunta() {
         btn.onclick = () => verificarRespuesta(op, p.respuesta, btn);
         contenedor.appendChild(btn);
     });
+}
+
+function mostrarVisualImagenes(p, signoOperacion, signoIgual) {
+    let contenedor = document.getElementById('visual-imagenes');
+    contenedor.style.display = 'flex';
+    contenedor.innerHTML = '';
+
+    for (let i = 0; i < p.a; i++) {
+        let span = document.createElement('span');
+        span.className = 'item-imagen';
+        span.textContent = p.emojiA;
+        contenedor.appendChild(span);
+    }
+    let oper = document.createElement('span');
+    oper.className = 'item-imagen mas';
+    oper.textContent = signoOperacion;
+    contenedor.appendChild(oper);
+    for (let i = 0; i < p.b; i++) {
+        let span = document.createElement('span');
+        span.className = 'item-imagen';
+        span.textContent = p.emojiB;
+        contenedor.appendChild(span);
+    }
+    let igual = document.createElement('span');
+    igual.className = 'item-imagen igual';
+    igual.textContent = signoIgual;
+    contenedor.appendChild(igual);
+    let pregunta = document.createElement('span');
+    pregunta.className = 'item-imagen';
+    pregunta.textContent = '❓';
+    contenedor.appendChild(pregunta);
+}
+
+// Multiplicación: solo primer factor con emoji, segundo como número
+function mostrarVisualMultiplicar(p) {
+    let contenedor = document.getElementById('visual-imagenes');
+    contenedor.style.display = 'flex';
+    contenedor.innerHTML = '';
+
+    for (let i = 0; i < p.a; i++) {
+        let span = document.createElement('span');
+        span.className = 'item-imagen';
+        span.textContent = p.emojiA;
+        contenedor.appendChild(span);
+    }
+    let oper = document.createElement('span');
+    oper.className = 'item-imagen por';
+    oper.textContent = '×';
+    contenedor.appendChild(oper);
+    let numSpan = document.createElement('span');
+    numSpan.className = 'item-imagen numero';
+    numSpan.textContent = p.b;
+    contenedor.appendChild(numSpan);
+    let igual = document.createElement('span');
+    igual.className = 'item-imagen igual';
+    igual.textContent = '=';
+    contenedor.appendChild(igual);
+    let pregunta = document.createElement('span');
+    pregunta.className = 'item-imagen';
+    pregunta.textContent = '❓';
+    contenedor.appendChild(pregunta);
 }
 
 // ===== DIBUJAR FRACCIÓN CON CANVAS =====
@@ -493,7 +749,7 @@ function dibujarFraccionCanvas(numerador, denominador) {
     let h = canvas.height;
     let cx = w / 2;
     let cy = h / 2;
-    let radio = 85;
+    let radio = Math.min(w, h) / 2 - 10;
 
     ctx.clearRect(0, 0, w, h);
 
@@ -578,7 +834,7 @@ function verificarRespuesta(seleccionada, correcta, boton) {
     }, 1500);
 }
 
-// ===== ESTRELLAS CON EMOJIS: 🌟 llena, ⭐ media, ⚪ vacía =====
+// ===== ESTRELLAS CON EMOJIS =====
 function generarEstrellasHTML(correctas) {
     let llenas = Math.floor(correctas / 2);
     let media = correctas % 2;
@@ -595,6 +851,9 @@ function generarEstrellasHTML(correctas) {
 // ===== RESULTADOS =====
 function mostrarResultados() {
     mostrarPantalla('pantalla-resultado');
+
+    guardarIntento(correctas);
+    actualizarRachaDia(rachaMax);
 
     let estrellasObtenidas = Math.floor(correctas / 2);
     let mediaEstrella = correctas % 2 === 1;
@@ -623,9 +882,30 @@ function mostrarResultados() {
 
     estrellasDiv.innerHTML = generarEstrellasHTML(correctas);
 
+    // Ocultar barra fija y lápiz en resultados
+    document.getElementById('barra-progreso-fija').style.display = 'none';
+    document.getElementById('btn-lapiz').style.display = 'none';
+
     if (correctas >= 9) {
         playSound('win');
         vibrar([100, 50, 100, 50, 200]);
         lanzarConfeti();
+    }
+}
+
+
+// ===== POPUP INFO =====
+function mostrarInfo() {
+    playSound('click');
+    vibrar(30);
+    document.getElementById('popup-info').classList.add('activo');
+}
+
+function cerrarInfo(event) {
+    playSound('click');
+    vibrar(30);
+    // Si se pasó evento y el click fue fuera del contenido, o si no hay evento (botón cerrar)
+    if (!event || event.target.id === 'popup-info') {
+        document.getElementById('popup-info').classList.remove('activo');
     }
 }

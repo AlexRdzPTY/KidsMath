@@ -8,7 +8,6 @@
 
 html, body {
     height: 100%;
-    overflow: hidden;
 }
 
 body {
@@ -16,7 +15,7 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     background-size: 400% 400%;
     animation: gradientMove 15s ease infinite;
-    touch-action: manipulation;
+    overflow: hidden;
 }
 
 @keyframes gradientMove {
@@ -38,12 +37,11 @@ body {
 /* ===== PANTALLAS ===== */
 .pantalla {
     display: none;
+    width: 100%;
     min-height: 100vh;
-    padding: 20px;
+    padding: 15px;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-bottom: 40px;
 }
 
 .pantalla.activa {
@@ -53,92 +51,94 @@ body {
 /* ===== PANTALLA EDAD ===== */
 #pantalla-edad {
     justify-content: center;
-    padding-top: 40px;
     text-align: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 
 #pantalla-edad h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .pregunta-edad {
     color: white;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    margin: 25px 0 15px 0;
+    margin: 20px 0 12px 0;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .edad-botones {
     grid-template-columns: 1fr !important;
-    max-width: 300px !important;
+    max-width: 280px !important;
 }
 
 .edad-botones .btn-op {
     flex-direction: row !important;
     justify-content: flex-start;
-    padding: 18px 20px;
-    gap: 15px;
+    padding: 16px 18px;
+    gap: 12px;
 }
 
 .edad-botones .btn-op .emoji {
-    font-size: 2rem;
+    font-size: 1.8rem;
 }
 
 .edad-botones .btn-op .texto {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* ===== PANTALLA INICIO ===== */
 #pantalla-inicio {
-    justify-content: flex-start;
-    padding-top: 30px;
+    justify-content: center;
     text-align: center;
+    padding-top: 25px;
+    padding-bottom: 30px;
 }
 
 #pantalla-inicio h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .subtitulo {
     color: rgba(255,255,255,0.95);
-    font-size: 1rem;
-    margin-bottom: 5px;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
 }
 
 .grupo-edad {
     color: #FFD700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .menu-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
-    max-width: 340px;
-    margin-bottom: 20px;
+    max-width: 320px;
+    margin-bottom: 15px;
 }
 
 .btn-op {
     background: white;
     border: none;
-    border-radius: 18px;
-    padding: 22px 12px;
+    border-radius: 16px;
+    padding: 18px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    gap: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     transition: transform 0.2s;
     cursor: pointer;
 }
@@ -148,11 +148,11 @@ body {
 }
 
 .btn-op .emoji {
-    font-size: 2.2rem;
+    font-size: 2rem;
 }
 
 .btn-op .texto {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: bold;
     color: #333;
 }
@@ -168,28 +168,137 @@ body {
 
 .stats {
     color: white;
-    font-size: 0.95rem;
-    line-height: 2;
-    margin-bottom: 15px;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    margin-bottom: 12px;
 }
 
 .btn-cambiar-edad {
     background: rgba(255,255,255,0.2);
     border: 2px solid white;
     color: white;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-size: 1rem;
+    padding: 10px 25px;
+    border-radius: 20px;
+    font-size: 0.95rem;
     cursor: pointer;
-    margin-top: 10px;
-    margin-bottom: 30px;
+    margin-top: 8px;
+}
+
+
+
+/* ===== BOTÓN INFO ===== */
+.btn-info {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid white;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.btn-info:active {
+    transform: scale(0.9);
+    background: rgba(255,255,255,0.4);
+}
+
+/* ===== POPUP INFO ===== */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.popup-overlay.activo {
+    display: flex;
+}
+
+.popup-contenido {
+    background: white;
+    border-radius: 20px;
+    padding: 25px 22px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: popupEntrada 0.3s ease-out;
+    text-align: center;
+}
+
+@keyframes popupEntrada {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.popup-titulo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #764ba2;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.popup-texto {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.popup-texto strong {
+    color: #764ba2;
+}
+
+.popup-cerrar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 20px;
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.popup-cerrar:active {
+    transform: scale(0.95);
 }
 
 /* ===== PANTALLA JUEGO ===== */
 #pantalla-juego {
-    padding: 15px;
     justify-content: flex-start;
-    padding-top: 20px;
+    padding-top: 12px;
+    padding-bottom: 90px;
+    position: relative;
 }
 
 .barra-superior {
@@ -197,65 +306,77 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .btn-volver {
-    background: rgba(255,255,255,0.2);
-    border: none;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid white;
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
 }
 
 .area-juego {
     width: 100%;
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 300px;
+    justify-content: flex-start;
 }
 
 .pregunta {
-    font-size: 2rem;
+    font-size: 1.7rem;
     color: white;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Visual de imágenes para menores de 5 */
+/* Visual de imágenes */
 .visual-imagenes {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    max-width: 280px;
+    gap: 6px;
+    margin-bottom: 12px;
+    max-width: 260px;
 }
 
 .item-imagen {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     animation: aparecer 0.3s ease-out;
 }
 
-.item-imagen.mas {
-    font-size: 1.5rem;
+.item-imagen.mas,
+.item-imagen.por,
+.item-imagen.igual {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
     align-self: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
-.item-imagen.igual {
-    font-size: 1.5rem;
+.item-imagen.numero {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
     align-self: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 @keyframes aparecer {
@@ -265,38 +386,39 @@ body {
 
 /* Visual de fracciones */
 .visual-fraccion {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     display: none;
 }
 
 #canvas-fraccion {
     border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     background: white;
     display: block;
 }
 
-/* Opciones de respuesta */
+/* Opciones de respuesta - BOTONES GRANDES PARA NIÑOS */
 .opciones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 15px;
     width: 100%;
     max-width: 320px;
+    margin-bottom: 10px;
 }
 
 .btn-respuesta {
     background: white;
     border: none;
-    border-radius: 15px;
-    padding: 20px 10px;
+    border-radius: 18px;
+    padding: 22px 10px;
     font-size: 1.6rem;
     font-weight: bold;
     color: #333;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     cursor: pointer;
     transition: all 0.2s;
-    min-height: 70px;
+    min-height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -331,95 +453,172 @@ body {
 
 /* Feedback */
 .feedback {
-    margin-top: 15px;
-    font-size: 1.2rem;
+    margin-top: 10px;
+    font-size: 1.1rem;
     color: white;
     font-weight: bold;
-    min-height: 30px;
+    min-height: 25px;
     text-align: center;
 }
 
-/* Barra de progreso */
+/* ===== BARRA DE PROGRESO FIJA ABAJO ===== */
+.barra-progreso-fija {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 340px;
+    z-index: 50;
+    background: rgba(0,0,0,0.2);
+    padding: 8px 14px;
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
 .barra-progreso {
     width: 100%;
-    max-width: 320px;
-    height: 10px;
+    height: 8px;
     background: rgba(255,255,255,0.3);
-    border-radius: 5px;
-    margin-top: 15px;
+    border-radius: 4px;
     overflow: hidden;
+    margin-bottom: 6px;
 }
 
 #barra-progreso-fill {
     height: 100%;
     background: #FFD700;
-    border-radius: 5px;
+    border-radius: 4px;
     width: 10%;
     transition: width 0.3s;
 }
 
 .progreso-texto {
-    color: rgba(255,255,255,0.8);
-    margin-top: 8px;
-    font-size: 0.85rem;
+    color: rgba(255,255,255,0.95);
+    font-size: 0.8rem;
+    text-align: center;
+    margin: 0;
+}
+
+/* ===== BOTÓN LÁPIZ ===== */
+.btn-lapiz {
+    position: fixed;
+    bottom: 82px;
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-size: 1.7rem;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.btn-lapiz:active {
+    transform: scale(0.9);
+}
+
+/* ===== NOTEPAD OVERLAY PANTALLA COMPLETA ===== */
+.notepad-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.notepad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.notepad-cerrar {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.notepad-canvas {
+    flex: 1;
+    width: 100%;
+    background: #FFFEF0;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.notepad-toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-top: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.notepad-btn {
+    background: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+    padding: 8px 16px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.notepad-btn:active {
+    background: #667eea;
+    color: white;
 }
 
 /* ===== PANTALLA RESULTADOS ===== */
 #pantalla-resultado {
     justify-content: center;
     text-align: center;
-    padding-top: 40px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 
 #pantalla-resultado h2 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .resultado-estrellas {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
+    font-size: 2.2rem;
+    margin-bottom: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
-}
-
-/* Estrellas medias */
-.estrella-container {
-    position: relative;
-    display: inline-block;
-    font-size: 2.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    gap: 4px;
 }
 
 .estrella-llena {
     color: #FFD700;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-.estrella-media {
-    position: relative;
-    display: inline-block;
-    color: #FFD700;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-.estrella-media::before {
-    content: '⭐';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 50%;
-    overflow: hidden;
-    color: #FFD700;
-}
-
-.estrella-media::after {
-    content: '⭐';
-    color: rgba(255,255,255,0.3);
 }
 
 .estrella-vacia {
@@ -428,20 +627,20 @@ body {
 
 #mensaje-resultado {
     color: white;
-    font-size: 1.1rem;
-    margin-bottom: 25px;
+    font-size: 1rem;
+    margin-bottom: 20px;
 }
 
 .btn-principal {
     background: #FFD700;
     border: none;
     border-radius: 25px;
-    padding: 15px 40px;
-    font-size: 1.1rem;
+    padding: 14px 35px;
+    font-size: 1rem;
     font-weight: bold;
     color: #333;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .btn-principal:active {

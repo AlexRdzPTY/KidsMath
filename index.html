@@ -8,6 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
     <div id="app">
@@ -45,8 +46,8 @@
             <div class="menu-botones" id="botones-operaciones"></div>
 
             <div class="stats">
-                <p>⭐ Estrellas totales: <span id="estrellas-total">0</span></p>
-                <p>🏆 Mejor racha: <span id="racha-max">0</span></p>
+                <p>📊 Tu promedio: <span id="promedio-dia">0.0</span>/5</p>
+                <p>🔥 Racha del día: <span id="racha-dia">0</span></p>
             </div>
 
             <button class="btn-cambiar-edad" onclick="volverEdad()">🔄 Cambiar edad</button>
@@ -55,9 +56,9 @@
         <!-- PANTALLA DE JUEGO -->
         <div id="pantalla-juego" class="pantalla">
             <div class="barra-superior">
-                <button class="btn-volver" onclick="volverInicio()">←</button>
+                <button class="btn-volver" onclick="volverInicio()">⬅️</button>
                 <span id="titulo-modo">Sumar</span>
-                <span id="contador-estrellas">⭐ 0/5</span>
+                <span id="contador-aciertos">✅ 0/10</span>
             </div>
 
             <div class="area-juego">
@@ -66,17 +67,12 @@
                 <div id="visual-imagenes" class="visual-imagenes" style="display:none;"></div>
 
                 <div id="visual-fraccion" class="visual-fraccion" style="display:none;">
-                    <canvas id="canvas-fraccion" width="200" height="200"></canvas>
+                    <canvas id="canvas-fraccion" width="180" height="180"></canvas>
                 </div>
 
                 <div class="opciones" id="opciones"></div>
                 <div id="feedback" class="feedback"></div>
             </div>
-
-            <div class="barra-progreso">
-                <div id="barra-progreso-fill"></div>
-            </div>
-            <p class="progreso-texto">Pregunta <span id="num-pregunta">1</span> de 10</p>
         </div>
 
         <!-- PANTALLA DE RESULTADOS -->
@@ -85,6 +81,53 @@
             <div class="resultado-estrellas" id="resultado-estrellas"></div>
             <p id="mensaje-resultado"></p>
             <button class="btn-principal" onclick="volverInicio()">Jugar otra vez</button>
+        </div>
+        <!-- BOTÓN INFO -->
+        <button id="btn-info" class="btn-info" onclick="mostrarInfo()" title="Información del proyecto">ℹ️</button>
+    </div>
+
+    <!-- POPUP INFO -->
+    <div id="popup-info" class="popup-overlay" onclick="cerrarInfo(event)">
+        <div class="popup-contenido" onclick="event.stopPropagation()">
+            <div class="popup-titulo">📚 Información del Proyecto</div>
+            <div class="popup-texto">
+                <p><strong>Institución:</strong> Universidad de Panamá</p>
+                <p><strong>Facultad:</strong> Facultad de Informática, Electrónica y Comunicaciones</p>
+                <p><strong>Carrera:</strong> Licenciatura en Desarrollo de Aplicaciones Tecnológicas</p>
+                <p><strong>Materia:</strong> Fundamentos de Innovación Informática</p>
+                <p><strong>Año:</strong> 1er año</p>
+                <br>
+                <p><strong>Tema:</strong> Apoyo didáctico para la enseñanza de la aritmética básica para niños.</p>
+                <br>
+                <p><strong>Autores:</strong></p>
+                <p>• Alexander Rodríguez</p>
+                <p>• Xavier Gálvez</p>
+            </div>
+            <button class="popup-cerrar" onclick="cerrarInfo()">Entendido 👍</button>
+        </div>
+    </div>
+
+    <!-- BARRA DE PROGRESO FIJA ABAJO (fuera de #app para evitar scroll issues) -->
+    <div id="barra-progreso-fija" class="barra-progreso-fija" style="display:none;">
+        <div class="barra-progreso">
+            <div id="barra-progreso-fill"></div>
+        </div>
+        <p class="progreso-texto">Pregunta <span id="num-pregunta">1</span> de 10</p>
+    </div>
+
+    <!-- BOTÓN LÁPIZ FLOTANTE -->
+    <button id="btn-lapiz" class="btn-lapiz" onclick="toggleNotepad()" style="display:none;">✏️</button>
+
+    <!-- NOTEPAD OVERLAY PANTALLA COMPLETA -->
+    <div id="notepad-overlay" class="notepad-overlay" style="display:none;">
+        <div class="notepad-header">
+            <span class="notepad-titulo">📝 Mi cuaderno</span>
+            <button class="notepad-cerrar" onclick="toggleNotepad()">✖️</button>
+        </div>
+        <canvas id="notepad-canvas" class="notepad-canvas"></canvas>
+        <div class="notepad-toolbar">
+            <button class="notepad-btn" onclick="limpiarNotepad()">🗑️ Borrar</button>
+            <button class="notepad-btn" onclick="cambiarColorNotepad()">🎨 Color</button>
         </div>
     </div>
 
